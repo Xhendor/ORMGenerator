@@ -1,6 +1,15 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
+ * Copyright (C)  2013 Rosendo R. Sosa. .
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  */
 package com.xhendor.me.ormgenerator;
 
@@ -146,13 +155,13 @@ public class ConnectSQLite implements DataTypes {
                 //entityIPH.addIdProperty();
 
                 while (resultSet.next()) {
+                    System.out.println("Registrando entidad:["+resultSet.getString("name")+"], TIPO DE DATO:["+resultSet.getString("type")+"]");
 
-
-                    if (resultSet.getInt("pk") == 1) {
+                    if (resultSet.getInt("pk") == integer) {
 
                         entityIPH.addIntProperty(resultSet.getString("name")).primaryKey();
                     } else {
-                        if (integerDataType(resultSet.getString("type")) != -1) {
+                        if (integerDataType(resultSet.getString("type"))!=-1) {
 
                             if (resultSet.getInt("notnull") == 1) {
                                 entityIPH.addIntProperty(resultSet.getString("name")).notNull();
@@ -161,12 +170,20 @@ public class ConnectSQLite implements DataTypes {
                                 entityIPH.addIntProperty(resultSet.getString("name"));
 
                             }
-                        } else if (numericDataType(resultSet.getString("type")) == BOOLEAN) {
+                        } else if (numericDataType(resultSet.getString("type")) == BOOLEAN||numericDataType(resultSet.getString("type")) == BOOL) {
                             if (resultSet.getInt("notnull") == 1) {
                                 entityIPH.addBooleanProperty(resultSet.getString("name")).notNull();
                             } else {
 
                                 entityIPH.addBooleanProperty(resultSet.getString("name"));
+
+                            }
+                        }else if (numericDataType(resultSet.getString("type")) == NUMERIC_VALUE) {
+                            if (resultSet.getInt("notnull") == 1) {
+                                entityIPH.addLongProperty(resultSet.getString("name")).notNull();
+                            } else {
+
+                                entityIPH.addLongProperty(resultSet.getString("name"));
 
                             }
                         } else if (numericDataType(resultSet.getString("type")) == DATE) {
@@ -193,7 +210,7 @@ public class ConnectSQLite implements DataTypes {
                                 entityIPH.addStringProperty(resultSet.getString("name"));
 
                             }
-                        } else if (realDataType(resultSet.getString("type")) == DOUBLE || realDataType(resultSet.getString("type")) == DOUBLE_P) {
+                        } else if (realDataType(resultSet.getString("type")) == DOUBLE || realDataType(resultSet.getString("type")) == DOUBLE_P ||realDataType(resultSet.getString("type")) == REAL_VALUE) {
                             if (resultSet.getInt("notnull") == 1) {
                                 entityIPH.addDoubleProperty(resultSet.getString("name")).notNull();
                             } else {
@@ -207,6 +224,14 @@ public class ConnectSQLite implements DataTypes {
                             } else {
 
                                 entityIPH.addFloatProperty(resultSet.getString("name"));
+
+                            }
+                        }else  if (blobDataType(resultSet.getString("type")) == BLOB_VALUE) {
+                            if (resultSet.getInt("notnull") == 1) {
+                                entityIPH.addByteArrayProperty(resultSet.getString("name")).notNull();
+                            } else {
+
+                                entityIPH.addByteArrayProperty(resultSet.getString("name"));
 
                             }
                         }
