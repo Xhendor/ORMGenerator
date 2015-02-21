@@ -123,12 +123,12 @@ public class ConnectSQLite implements DataTypes {
 
     }
     
-    public void gen(){
-            generateORMFiles();
+    public boolean gen(){
+           return generateORMFiles();
 
     }
 
-    private void generateORMFiles() {
+    private boolean generateORMFiles() {
 
         try {
 
@@ -252,12 +252,17 @@ public class ConnectSQLite implements DataTypes {
 
 
         } catch (Exception e) {
+            return false;
         } finally {
             try {
                 statement.close();
                 connection.close();
             } catch (Exception e) {
+                
+                return false;
             }
         }
+    
+    return true;
     }
 }

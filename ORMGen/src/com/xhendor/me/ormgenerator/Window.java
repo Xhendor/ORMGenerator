@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
@@ -31,12 +32,12 @@ import javax.swing.filechooser.FileFilter;
  */
 public class Window extends JFrame implements ActionListener {
 
-    private JButton selectSQLiteBD;
-    private JButton selectOutputDir;
-    private JButton generarDAOs;
+    private final JButton selectSQLiteBD;
+    private final JButton selectOutputDir;
+    private final JButton generarDAOs;
     private File dataBaseFile;
     private File directorio;
-    private JTextField packageName;
+    private final JTextField packageName;
     private final ConnectSQLite conn;
 
     public Window() throws HeadlessException {
@@ -66,7 +67,6 @@ public class Window extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-
 
         if (ae.getSource() == selectOutputDir) {
             final JFileChooser fc;
@@ -118,19 +118,34 @@ public class Window extends JFrame implements ActionListener {
             dataBaseFile = fc.getSelectedFile();
         } else if (ae.getSource() == generarDAOs) {
 
-
             if (!packageName.getText().trim().isEmpty() && dataBaseFile != null && directorio != null) {
+                String extension = "";
                 try {
-                    conn.loadBD(dataBaseFile);
-                                        conn.setPackageName(packageName.getText());
+                    int i = dataBaseFile.getName().lastIndexOf('.');
+                    if (i > 0) {
+                        extension = dataBaseFile.getName().substring(i + 1);
+                    }
+                    if (extension.equalsIgnoreCase("sqlite") || extension.equalsIgnoreCase("db")) {
+                        conn.loadBD(dataBaseFile);
+                        conn.setPackageName(packageName.getText());
 
-                    conn.gen();
-                                        conn.setOutputDir(directorio.getPath());
+                        if (conn.gen()) {
+                            conn.setOutputDir(directorio.getPath());
+                            JOptionPane.showMessageDialog(rootPane, "Listo creado en:" + directorio.getPath());
+                        } else {
+                            JOptionPane.showMessageDialog(rootPane, "Ocurrio un error.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(rootPane, "Solo archivos con extensión 'sqlite' o 'db'");
 
+                    }
                 } catch (Exception ex) {
                     System.out.println("Err:" + ex.getMessage());
 
                 }
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "Faltan información.");
+
             }
         }
     }
